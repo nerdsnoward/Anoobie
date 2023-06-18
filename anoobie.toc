@@ -1,0 +1,8 @@
+## Interface: 11200
+## Title: anoobie
+## Author: Snoward
+## Version: 1.0.0
+
+anoobie.xml
+anoobie.toc
+anoobie.lua
