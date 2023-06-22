@@ -142,6 +142,9 @@ function Anoobie_OnEvent()
         local mark, ability = processRaidWarning(arg1)
 
         if mark > 0 and ability then
+            if (not G_announcedMessages[arg1]) then
+                G_announcedMessages[arg1] = true
+            end
             Anoobie_Draw(ability, mark)
         end
     end
@@ -177,7 +180,7 @@ function Anoobie_Draw(discoveredTargetBuff, discoveredMarkIndex)
         local markFrameId = "mark" .. G_ICONS[targetMarkIndex].name .. "Row" .. G_counter
         local target = buff .. G_ICONS[targetMarkIndex].name
 
-        -- Avoid drawing the same mark - buff combination multiple times
+        -- Avoid drawing the same mark/buff combination multiple times
         if not G_registeredTargets[target] and G_counter <= 4 then
             G_registeredTargets[target] = true
             G_childFrames.marks[markFrameId]:Show()
