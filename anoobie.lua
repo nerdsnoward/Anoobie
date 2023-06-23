@@ -154,7 +154,7 @@ function Anoobie_OnEvent()
             Anoobie_Draw(G_DETECT_MAGIC_TEXTURE)
         end
 
-        local isAnoobieTarget = UnitExists("target") and UnitName("target") == "Mysql"
+        local isAnoobieTarget = UnitExists("target") and UnitName("target") == "Anubisath Sentinel"
 
         if isAnoobieTarget then
             local isDetectMagicApplied = checkForDetectMagicDebuff("target")
@@ -238,7 +238,6 @@ end
 
 function Anoobie_OnLoad()
     Anoobie:RegisterEvent("UNIT_AURA")
-    Anoobie:RegisterEvent("PLAYER_REGEN_DISABLED")
     Anoobie:RegisterEvent("CHAT_MSG_RAID_WARNING")
     print('---- ANOOBIE LOADED ----')
 end
