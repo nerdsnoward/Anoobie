@@ -3,8 +3,18 @@ function print(arg)
 end
 
 G_childFrames = {
-    marks = {},
-    buffs = {},
+    marks = {
+        [1] = MarkTexture1,
+        [2] = MarkTexture2,
+        [3] = MarkTexture3,
+        [4] = MarkTexture4
+    },
+    buffs = {
+        [1] = BuffTexture1,
+        [2] = BuffTexture2,
+        [3] = BuffTexture3,
+        [4] = BuffTexture4
+    },
     texts = {
         [1] = AnoobieLabel1,
         [2] = AnoobieLabel2,
@@ -14,16 +24,56 @@ G_childFrames = {
 }
 G_DETECT_MAGIC_TEXTURE = 'Interface\\Icons\\Spell_Holy_Dizzy'
 G_ABILITIES = {
-    [G_DETECT_MAGIC_TEXTURE] = "Arcane & Fire Reflect",
-    ["Interface\\Icons\\Spell_Arcane_Blink"] = "Shadow & Frost Reflect",
-    ["Interface\\Icons\\Ability_ThunderClap"] = "Thunderclap",
-    ["Interface\\Icons\\Spell_Nature_Thorns"] = "Thorns",
-    ["Interface\\Icons\\Ability_UpgradeMoonGlaive"] = "Knockaway & Taunt Immune",
-    ["Interface\\Icons\\Spell_Shadow_ManaBurn"] = "Mana Burn",
-    ["Interface\\Icons\\Spell_Shadow_Haunting"] = "Shadow Storm",
-    ["Interface\\Icons\\Ability_Warrior_SavageBlow"] = "Mortal strike",
-    ["Interface\\Icons\\Spell_Nature_ResistNature"] = "Mending",
-    ["Interface\\Icons\\Spell_Holy_MagicalSentry"] = "Arcane intellect",
+    [G_DETECT_MAGIC_TEXTURE] = {
+        name = "Arcane & Fire Reflect",
+        order = 1,
+        icon = nil
+    },
+    ["Interface\\Icons\\Spell_Arcane_Blink"] = {
+        name = "Shadow & Frost Reflect",
+        order = 1,
+        icon = nil
+    },
+    ["Interface\\Icons\\Ability_ThunderClap"] = {
+        name = "Thunderclap",
+        order = 4,
+        icon = nil
+    },
+    ["Interface\\Icons\\Spell_Nature_Thorns"] = {
+        name = "Thorns",
+        order = 4,
+        icon = nil
+    },
+    ["Interface\\Icons\\Ability_UpgradeMoonGlaive"] = {
+        name = "Knockaway & Taunt Immune",
+        order = 3,
+        icon = nil
+    },
+    ["Interface\\Icons\\Spell_Shadow_ManaBurn"] = {
+        name = "Mana Burn",
+        order = 4,
+        icon = nil
+    },
+    ["Interface\\Icons\\Spell_Shadow_Haunting"] = {
+        name = "Shadow Storm",
+        order = 5,
+        icon = nil
+    },
+    ["Interface\\Icons\\Ability_Warrior_SavageBlow"] = {
+        name = "Mortal strike",
+        order = 3,
+        icon = nil
+    },
+    ["Interface\\Icons\\Spell_Nature_ResistNature"] = {
+        name = "Mending",
+        order = 2,
+        icon = nil
+    },
+    ["Interface\\Icons\\Spell_Holy_MagicalSentry"] = {
+        name = "Arcane intellect",
+        order = 5,
+        icon = nil
+    },
 }
 G_ICONS = {
     [1] = {
@@ -79,6 +129,7 @@ G_framesInitialized = false
 G_counter = 1
 G_registeredTargets = {}
 G_announcedMessages = {}
+G_discoveredAbilities = {}
 
 -- Removes white spaces and & char from string.
 -- Example: turnsShadow & Frost Reflect to ShadowFrostReflect
@@ -120,7 +171,7 @@ function processRaidWarning(str)
         local secondString = string.sub(str, index + 2)
 
         for key, value in pairs(G_ABILITIES) do
-            if (value == secondString) then
+            if (value.name == secondString) then
                 ability = key
                 break
             end
@@ -138,7 +189,7 @@ function processRaidWarning(str)
 end
 
 function Anoobie_OnEvent()
-    if event == "CHAT_MSG_RAID_WARNING" then
+    if event == "CHAT_MSG_RAID_WARNING" or event == "CHAT_MSG_RAID" then
         local mark, ability = processRaidWarning(arg1)
 
         if mark > 0 and ability then
@@ -166,31 +217,45 @@ function Anoobie_OnEvent()
 end
 
 function Anoobie_Draw(discoveredTargetBuff, discoveredMarkIndex)
-    if not G_framesInitialized then
-        Anoobie_InitializeFrames()
-        G_framesInitialized = true
-    end
-
     local targetMarkIndex = discoveredMarkIndex or GetRaidTargetIndex("target")
     local targetBuff = discoveredTargetBuff or UnitBuff("target", 1)
+    local targetId = removeWhitespaceAndAmpersand(G_ABILITIES[targetBuff].name) .. G_ICONS[targetMarkIndex].name
 
-    if (targetMarkIndex and G_ABILITIES[targetBuff]) then
-        local buff = removeWhitespaceAndAmpersand(G_ABILITIES[targetBuff])
-        local buffFrameId = "buff" .. buff .. "Row" .. G_counter
-        local markFrameId = "mark" .. G_ICONS[targetMarkIndex].name .. "Row" .. G_counter
-        local target = buff .. G_ICONS[targetMarkIndex].name
+    if (targetMarkIndex and G_ABILITIES[targetBuff] and not G_registeredTargets[targetId] and G_counter <= 4) then
+        Anoobie_SetTextures(targetBuff, targetMarkIndex, G_counter)
+        Anoobie_SendRaidWarning(G_ICONS[targetMarkIndex].name .. ": " .. G_ABILITIES[targetBuff].name)
+        G_counter = G_counter + 1
+        G_registeredTargets[targetId] = true
+        table.insert(G_discoveredAbilities, {
+            name = G_ABILITIES[targetBuff].name,
+            order = G_ABILITIES[targetBuff].order,
+            icon = targetMarkIndex,
+            buffTexture = targetBuff
+        })
+    end
 
-        -- Avoid drawing the same mark/buff combination multiple times
-        if not G_registeredTargets[target] and G_counter <= 4 then
-            G_registeredTargets[target] = true
-            G_childFrames.marks[markFrameId]:Show()
-            G_childFrames.buffs[buffFrameId]:Show()
-            G_childFrames.texts[G_counter]:SetText(G_ABILITIES[targetBuff])
-            local message = G_ICONS[targetMarkIndex].name .. ": " .. G_ABILITIES[targetBuff]
-            Anoobie_SendRaidWarning(message)
-            G_counter = G_counter + 1
+    if (G_counter == 5) then
+        local counter = 1
+
+        table.sort(G_discoveredAbilities, function(a, b)
+            return a.order < b.order
+        end)
+
+        for idx, ability in pairs(G_discoveredAbilities) do
+            Anoobie_SetTextures(ability.buffTexture, ability.icon, idx)
         end
     end
+end
+
+function Anoobie_SetTextures(targetBuff, targetMarkIndex, counter)
+    local icon = G_ICONS[targetMarkIndex]
+    G_childFrames.marks[counter]:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
+    G_childFrames.marks[counter]:SetTexCoord(icon.textureCoords.left, icon.textureCoords.right,
+        icon.textureCoords.top,
+        icon.textureCoords.bottom)
+    G_childFrames.buffs[counter]:SetTexture(targetBuff)
+    G_childFrames.texts[counter]:SetText(G_ABILITIES[targetBuff].name)
+    G_ABILITIES[targetBuff].icon = targetMarkIndex
 end
 
 function Anoobie_SendRaidWarning(message)
@@ -200,59 +265,31 @@ function Anoobie_SendRaidWarning(message)
     end
 end
 
-function Anoobie_InitializeFrames()
-    local coords = { -36, -67, -98, -129 }
-
-    for index, value in ipairs(coords) do
-        for _, icon in ipairs(G_ICONS) do
-            local frameName = "mark" .. icon.name .. "Row" .. index
-            local childFrame = CreateFrame("Frame", frameName, Anoobie)
-            childFrame:SetWidth(25)
-            childFrame:SetHeight(25)
-            childFrame:SetPoint("TOPLEFT", 22, value)
-
-            local texture = childFrame:CreateTexture("$parentTexture", "ARTWORK")
-            texture:SetAllPoints(true)
-            texture:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
-            texture:SetTexCoord(icon.textureCoords.left, icon.textureCoords.right, icon.textureCoords.top,
-                icon.textureCoords.bottom)
-            childFrame:Hide()
-            G_childFrames.marks[frameName] = childFrame
-        end
-
-        for key, name in pairs(G_ABILITIES) do
-            local frameName = "buff" .. removeWhitespaceAndAmpersand(name) .. "Row" .. index
-            local childFrame = CreateFrame("Frame", frameName, Anoobie)
-            childFrame:SetWidth(25)
-            childFrame:SetHeight(25)
-            childFrame:SetPoint("TOPLEFT", 53, value)
-
-            local texture = childFrame:CreateTexture("$parentTexture", "ARTWORK")
-            texture:SetAllPoints(true)
-            texture:SetTexture(key)
-            childFrame:Hide()
-            G_childFrames.buffs[frameName] = childFrame
-        end
-    end
-end
-
 function Anoobie_OnLoad()
     Anoobie:RegisterEvent("UNIT_AURA")
     Anoobie:RegisterEvent("CHAT_MSG_RAID_WARNING")
+    Anoobie:RegisterEvent("CHAT_MSG_RAID")
     print('---- ANOOBIE LOADED ----')
 end
 
 function Anoobie_Reset()
+    --[[ SendChatMessage("Square: Arcane & Fire Reflect", "RAID_WARNING")
+    SendChatMessage("Star: Mana Burn", "RAID_WARNING")
+    SendChatMessage("Skull: Shadow Storm", "RAID_WARNING")
+    SendChatMessage("Cross: Shadow & Frost Reflect", "RAID_WARNING")
+    ]]
     for _, frame in pairs(G_childFrames.buffs) do
-        frame:Hide()
+        frame:SetTexture("Interface\\Icons\\Inv_Misc_Questionmark")
     end
     for _, frame in pairs(G_childFrames.marks) do
-        frame:Hide()
+        frame:SetTexture("Interface\\Icons\\Inv_Misc_Questionmark")
+        frame:SetTexCoord(0, 1, 0, 1)
     end
     for _, frame in pairs(G_childFrames.texts) do
         frame:SetText("Unkown Ability")
     end
     G_registeredTargets = {}
     G_announcedMessages = {}
+    G_discoveredAbilities = {}
     G_counter = 1
 end

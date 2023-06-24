@@ -120,10 +120,11 @@
         </Anchors>
         <Layers>
           <Layer>
-            <Texture name="$parentTexture" setAllPoints="true"
-              file="interface\buttons\ui-quickslot-depress">
+            <Texture name="BuffTexture1" id="1" setAllPoints="true"
+              file="Interface\Icons\Inv_Misc_Questionmark">
               <TexCoords left="0" right="1" top="0" bottom="1" />
             </Texture>
+            
           </Layer>
         </Layers>
       </Frame>
@@ -143,8 +144,8 @@
         </Anchors>
         <Layers>
           <Layer>
-            <Texture name="$parentTexture" setAllPoints="true"
-              file="interface\buttons\ui-quickslot-depress">
+            <Texture name="BuffTexture2" id="2" setAllPoints="true"
+              file="Interface\Icons\Inv_Misc_Questionmark">
               <TexCoords left="0" right="1" top="0" bottom="1" />
             </Texture>
           </Layer>
@@ -166,8 +167,8 @@
         </Anchors>
         <Layers>
           <Layer>
-            <Texture name="$parentTexture" setAllPoints="true"
-              file="interface\buttons\ui-quickslot-depress" alphaMode="ALPHAKEY">
+            <Texture name="MarkTexture2" id="2" setAllPoints="true"
+              file="Interface\Icons\Inv_Misc_Questionmark" alphaMode="ALPHAKEY">
               <TexCoords left="0" right="1" top="0" bottom="1" />
             </Texture>
           </Layer>
@@ -189,8 +190,8 @@
         </Anchors>
         <Layers>
           <Layer>
-            <Texture name="$parentTexture" setAllPoints="true"
-              file="interface\buttons\ui-quickslot-depress">
+            <Texture name="BuffTexture3" id="3" setAllPoints="true"
+              file="Interface\Icons\Inv_Misc_Questionmark">
               <TexCoords left="0" right="1" top="0" bottom="1" />
             </Texture>
           </Layer>
@@ -212,8 +213,8 @@
         </Anchors>
         <Layers>
           <Layer>
-            <Texture name="$parentTexture" setAllPoints="true"
-              file="interface\buttons\ui-quickslot-depress" alphaMode="ALPHAKEY">
+            <Texture name="MarkTexture3" id="3" setAllPoints="true"
+              file="Interface\Icons\Inv_Misc_Questionmark" alphaMode="ALPHAKEY">
               <TexCoords left="0" right="1" top="0" bottom="1" />
             </Texture>
           </Layer>
@@ -235,8 +236,8 @@
         </Anchors>
         <Layers>
           <Layer>
-            <Texture name="$parentTexture" setAllPoints="true"
-              file="interface\buttons\ui-quickslot-depress" alphaMode="ALPHAKEY">
+            <Texture name="MarkTexture4" id="4" setAllPoints="true"
+              file="Interface\Icons\Inv_Misc_Questionmark" alphaMode="ALPHAKEY">
               <TexCoords left="0" right="1" top="0" bottom="1" />
             </Texture>
           </Layer>
@@ -258,8 +259,8 @@
         </Anchors>
         <Layers>
           <Layer>
-            <Texture name="$parentTexture" setAllPoints="true"
-              file="interface\buttons\ui-quickslot-depress">
+            <Texture name="BuffTexture4" id="4" setAllPoints="true"
+              file="Interface\Icons\Inv_Misc_Questionmark">
               <TexCoords left="0" right="1" top="0" bottom="1" />
             </Texture>
           </Layer>
@@ -456,8 +457,8 @@
         </Anchors>
         <Layers>
           <Layer>
-            <Texture name="$parentTexture" setAllPoints="true"
-              file="interface\buttons\ui-quickslot-depress" alphaMode="ALPHAKEY">
+            <Texture name="MarkTexture1" id="1" setAllPoints="true"
+              file="Interface\Icons\Inv_Misc_Questionmark" alphaMode="ALPHAKEY">
               <TexCoords left="0" right="1" top="0" bottom="1" />
             </Texture>
           </Layer>
