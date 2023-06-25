@@ -2,6 +2,21 @@ function print(arg)
     DEFAULT_CHAT_FRAME:AddMessage(arg);
 end
 
+G_VARIATIONS = {
+    DEFAULT = {
+        backdropColor = { 0, 0, 0 },
+        backdropBorderColor = { 1, 1, 1 },
+        VertexColor = { 1, 1, 1 },
+        title = "Anoobie"
+
+    },
+    FLAMINGO = {
+        backdropColor = { 1, 0.498, 0.631, 0.8 },
+        backdropBorderColor = { 1, 0.498, 0.631 },
+        VertexColor = { 1, 0.498, 0.631 },
+        title = "Kill order"
+    }
+}
 G_childFrames = {
     marks = {
         [1] = MarkTexture1,
@@ -60,18 +75,13 @@ G_ABILITIES = {
         icon = nil
     },
     ["Interface\\Icons\\Ability_Warrior_SavageBlow"] = {
-        name = "Mortal strike",
+        name = "Mortal Strike",
         order = 3,
         icon = nil
     },
     ["Interface\\Icons\\Spell_Nature_ResistNature"] = {
         name = "Mending",
         order = 2,
-        icon = nil
-    },
-    ["Interface\\Icons\\Spell_Holy_MagicalSentry"] = {
-        name = "Arcane intellect",
-        order = 5,
         icon = nil
     },
 }
@@ -125,7 +135,6 @@ G_ICONS = {
         name = "Skull"
     }
 }
-G_framesInitialized = false
 G_counter = 1
 G_registeredTargets = {}
 G_announcedMessages = {}
@@ -189,7 +198,7 @@ function processRaidWarning(str)
 end
 
 function Anoobie_OnEvent()
-    if event == "CHAT_MSG_RAID_WARNING" or event == "CHAT_MSG_RAID" then
+    if event == "CHAT_MSG_RAID_WARNING" or event == "CHAT_MSG_RAID" or "CHAT_MSG_RAID_LEADER" then
         local mark, ability = processRaidWarning(arg1)
 
         if mark > 0 and ability then
@@ -219,24 +228,27 @@ end
 function Anoobie_Draw(discoveredTargetBuff, discoveredMarkIndex)
     local targetMarkIndex = discoveredMarkIndex or GetRaidTargetIndex("target")
     local targetBuff = discoveredTargetBuff or UnitBuff("target", 1)
-    local targetId = removeWhitespaceAndAmpersand(G_ABILITIES[targetBuff].name) .. G_ICONS[targetMarkIndex].name
+    local targetId = G_ABILITIES[targetBuff] and
+    (removeWhitespaceAndAmpersand(G_ABILITIES[targetBuff].name) .. G_ICONS[targetMarkIndex].name) or false
+
+    if (G_counter == 6) then
+        Anoobie_Reset()
+    end
 
     if (targetMarkIndex and G_ABILITIES[targetBuff] and not G_registeredTargets[targetId] and G_counter <= 4) then
         Anoobie_SetTextures(targetBuff, targetMarkIndex, G_counter)
         Anoobie_SendRaidWarning(G_ICONS[targetMarkIndex].name .. ": " .. G_ABILITIES[targetBuff].name)
-        G_counter = G_counter + 1
-        G_registeredTargets[targetId] = true
         table.insert(G_discoveredAbilities, {
             name = G_ABILITIES[targetBuff].name,
             order = G_ABILITIES[targetBuff].order,
             icon = targetMarkIndex,
             buffTexture = targetBuff
         })
+        G_counter = G_counter + 1
+        G_registeredTargets[targetId] = true
     end
 
     if (G_counter == 5) then
-        local counter = 1
-
         table.sort(G_discoveredAbilities, function(a, b)
             return a.order < b.order
         end)
@@ -244,6 +256,38 @@ function Anoobie_Draw(discoveredTargetBuff, discoveredMarkIndex)
         for idx, ability in pairs(G_discoveredAbilities) do
             Anoobie_SetTextures(ability.buffTexture, ability.icon, idx)
         end
+        Anoobie:SetBackdrop({
+            bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+            edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
+            insets = { left = 11, right = 12, top = 12, bottom = 11 },
+        })
+        Anoobie_ChangeAppearance(G_VARIATIONS.FLAMINGO, "RaidWarning")
+        G_counter = G_counter + 1
+    end
+end
+
+function Anoobie_ChangeAppearance(variation, sound)
+    Anoobie:SetBackdropColor(
+        variation.backdropColor[1],
+        variation.backdropColor[2],
+        variation.backdropColor[3],
+        variation.backdropColor[4]
+    )
+    Anoobie:SetBackdropBorderColor(
+        variation.backdropBorderColor[1],
+        variation.backdropBorderColor[2],
+        variation.backdropBorderColor[3],
+        variation.backdropBorderColor[4]
+    )
+    AnoobieTitleTexture:SetVertexColor(
+        variation.VertexColor[1],
+        variation.VertexColor[2],
+        variation.VertexColor[3]
+    )
+    AnoobieTitle:SetText(variation.title)
+
+    if (sound) then
+        PlaySound(sound, "master");
     end
 end
 
@@ -269,15 +313,11 @@ function Anoobie_OnLoad()
     Anoobie:RegisterEvent("UNIT_AURA")
     Anoobie:RegisterEvent("CHAT_MSG_RAID_WARNING")
     Anoobie:RegisterEvent("CHAT_MSG_RAID")
+    Anoobie:RegisterEvent("CHAT_MSG_RAID_LEADER")
     print('---- ANOOBIE LOADED ----')
 end
 
 function Anoobie_Reset()
-    --[[ SendChatMessage("Square: Arcane & Fire Reflect", "RAID_WARNING")
-    SendChatMessage("Star: Mana Burn", "RAID_WARNING")
-    SendChatMessage("Skull: Shadow Storm", "RAID_WARNING")
-    SendChatMessage("Cross: Shadow & Frost Reflect", "RAID_WARNING")
-    ]]
     for _, frame in pairs(G_childFrames.buffs) do
         frame:SetTexture("Interface\\Icons\\Inv_Misc_Questionmark")
     end
@@ -288,6 +328,7 @@ function Anoobie_Reset()
     for _, frame in pairs(G_childFrames.texts) do
         frame:SetText("Unkown Ability")
     end
+    Anoobie_ChangeAppearance(G_VARIATIONS.DEFAULT, "GAMEDIALOGOPEN")
     G_registeredTargets = {}
     G_announcedMessages = {}
     G_discoveredAbilities = {}
