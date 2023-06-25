@@ -139,6 +139,7 @@ G_counter = 1
 G_registeredTargets = {}
 G_announcedMessages = {}
 G_discoveredAbilities = {}
+G_arcaneReflected = false
 
 -- Removes white spaces and & char from string.
 -- Example: turnsShadow & Frost Reflect to ShadowFrostReflect
@@ -210,8 +211,10 @@ function Anoobie_OnEvent()
     end
 
     if (event == "UNIT_AURA") then
-        if checkForDetectMagicDebuff("player") then
+        if checkForDetectMagicDebuff("player")  and not G_arcaneReflected then
             Anoobie_Draw(G_DETECT_MAGIC_TEXTURE)
+            G_arcaneReflected = true
+            return
         end
 
         local isAnoobieTarget = UnitExists("target") and UnitName("target") == "Anubisath Sentinel"
@@ -228,11 +231,10 @@ end
 function Anoobie_Draw(discoveredTargetBuff, discoveredMarkIndex)
     local targetMarkIndex = discoveredMarkIndex or GetRaidTargetIndex("target")
     local targetBuff = discoveredTargetBuff or UnitBuff("target", 1)
-    local targetId = G_ABILITIES[targetBuff] and
-    (removeWhitespaceAndAmpersand(G_ABILITIES[targetBuff].name) .. G_ICONS[targetMarkIndex].name) or false
+    local targetId = removeWhitespaceAndAmpersand(G_ABILITIES[targetBuff].name) .. G_ICONS[targetMarkIndex].name
 
     if (G_counter == 6) then
-        Anoobie_Reset()
+        -- Anoobie_Reset()
     end
 
     if (targetMarkIndex and G_ABILITIES[targetBuff] and not G_registeredTargets[targetId] and G_counter <= 4) then
@@ -333,4 +335,5 @@ function Anoobie_Reset()
     G_announcedMessages = {}
     G_discoveredAbilities = {}
     G_counter = 1
+    G_arcaneReflected = false
 end
