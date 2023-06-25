@@ -5,4 +5,5 @@
 
 anoobie.xml
 anoobie.toc
+data.lua
 anoobie.lua
