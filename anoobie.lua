@@ -306,7 +306,8 @@ end
 
 function Anoobie_SendRaidWarning(message)
     if not G_announcedMessages[message] then
-        SendChatMessage(message, "RAID_WARNING")
+        local channel = (isRaidLeader and "RAID_WARNING") or "RAID"
+        SendChatMessage(message, channel)
         G_announcedMessages[message] = true
     end
 end
