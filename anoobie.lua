@@ -199,7 +199,7 @@ function processRaidWarning(str)
 end
 
 function Anoobie_OnEvent()
-    if event == "CHAT_MSG_RAID_WARNING" or event == "CHAT_MSG_RAID" or "CHAT_MSG_RAID_LEADER" then
+    if event == "CHAT_MSG_RAID_WARNING" or event == "CHAT_MSG_RAID" or event == "CHAT_MSG_RAID_LEADER" then
         local mark, ability = processRaidWarning(arg1)
 
         if mark > 0 and ability then
@@ -211,7 +211,7 @@ function Anoobie_OnEvent()
     end
 
     if (event == "UNIT_AURA") then
-        if checkForDetectMagicDebuff("player")  and not G_arcaneReflected then
+        if checkForDetectMagicDebuff("player") and not G_arcaneReflected then
             Anoobie_Draw(G_DETECT_MAGIC_TEXTURE)
             G_arcaneReflected = true
             return
@@ -231,23 +231,28 @@ end
 function Anoobie_Draw(discoveredTargetBuff, discoveredMarkIndex)
     local targetMarkIndex = discoveredMarkIndex or GetRaidTargetIndex("target")
     local targetBuff = discoveredTargetBuff or UnitBuff("target", 1)
-    local targetId = removeWhitespaceAndAmpersand(G_ABILITIES[targetBuff].name) .. G_ICONS[targetMarkIndex].name
 
-    if (G_counter == 6) then
-        -- Anoobie_Reset()
+    if event == "PLAYER_REGEN_DISABLED" or event == "PLAYER_REGEN_DISABLED" then
+     -- TO DO reset addon
     end
-
-    if (targetMarkIndex and G_ABILITIES[targetBuff] and not G_registeredTargets[targetId] and G_counter <= 4) then
-        Anoobie_SetTextures(targetBuff, targetMarkIndex, G_counter)
-        Anoobie_SendRaidWarning(G_ICONS[targetMarkIndex].name .. ": " .. G_ABILITIES[targetBuff].name)
-        table.insert(G_discoveredAbilities, {
-            name = G_ABILITIES[targetBuff].name,
-            order = G_ABILITIES[targetBuff].order,
-            icon = targetMarkIndex,
-            buffTexture = targetBuff
-        })
-        G_counter = G_counter + 1
-        G_registeredTargets[targetId] = true
+    
+    if (targetMarkIndex and G_ABILITIES[targetBuff] and G_counter <= 4) then
+        local targetId = removeWhitespaceAndAmpersand(G_ABILITIES[targetBuff].name) .. G_ICONS[targetMarkIndex].name
+        if (not G_registeredTargets[targetId]) then
+            if not Anoobie:IsVisible() then
+                Anoobie:Show()
+            end
+            Anoobie_SetTextures(targetBuff, targetMarkIndex, G_counter)
+            Anoobie_SendRaidWarning(G_ICONS[targetMarkIndex].name .. ": " .. G_ABILITIES[targetBuff].name)
+            table.insert(G_discoveredAbilities, {
+                name = G_ABILITIES[targetBuff].name,
+                order = G_ABILITIES[targetBuff].order,
+                icon = targetMarkIndex,
+                buffTexture = targetBuff
+            })
+            G_counter = G_counter + 1
+            G_registeredTargets[targetId] = true
+        end
     end
 
     if (G_counter == 5) then
@@ -263,7 +268,7 @@ function Anoobie_Draw(discoveredTargetBuff, discoveredMarkIndex)
             edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
             insets = { left = 11, right = 12, top = 12, bottom = 11 },
         })
-        Anoobie_ChangeAppearance(G_VARIATIONS.FLAMINGO, "RaidWarning")
+        Anoobie_ChangeAppearance(G_VARIATIONS.FLAMINGO, "HumanExploration")
         G_counter = G_counter + 1
     end
 end
@@ -317,6 +322,8 @@ function Anoobie_OnLoad()
     Anoobie:RegisterEvent("CHAT_MSG_RAID_WARNING")
     Anoobie:RegisterEvent("CHAT_MSG_RAID")
     Anoobie:RegisterEvent("CHAT_MSG_RAID_LEADER")
+    Anoobie:RegisterEvent("PLAYER_REGEN_DISABLED")
+    Anoobie:RegisterEvent("PLAYER_REGEN_ENABLED")
     print('---- ANOOBIE LOADED ----')
 end
 
@@ -331,7 +338,7 @@ function Anoobie_Reset()
     for _, frame in pairs(G_childFrames.texts) do
         frame:SetText("Unkown Ability")
     end
-    Anoobie_ChangeAppearance(G_VARIATIONS.DEFAULT, "GAMEDIALOGOPEN")
+    Anoobie_ChangeAppearance(G_VARIATIONS.DEFAULT)
     G_registeredTargets = {}
     G_announcedMessages = {}
     G_discoveredAbilities = {}
