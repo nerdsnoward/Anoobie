@@ -25,4 +25,8 @@ Icons will reset when re-entering combat or when refresh button is clicked (uppe
 
 Recommended for mages and raid leads.
 
+### Known Issues
 
+Hunter Feign Death then re-entering combat while Anubisath Sentinels are still alive with Detect Magic debuff may result in redundant raid announcement of their ability.
+
+Mage with detect magic debuff on themselves when targeting a dead Anubisath Sentinel target may result in redundant raid announcement of their ability.
