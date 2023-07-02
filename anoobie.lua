@@ -221,10 +221,10 @@ function Anoobie_OnEvent()
     end
 end
 
-function isAbilityDiscoverd(buff, icon)
+function isAbilityDiscoverd(buff)
     isDiscovered = false
     for _, ability in pairs(G_discoveredAbilities) do
-        if ability.buffTexture == buff and ability.icon == icon then
+        if ability.buffTexture == buff then
             isDiscovered = true
         end
     end
@@ -234,7 +234,7 @@ end
 function Anoobie_Draw(discoveredTargetBuff, discoveredMarkIndex)
     local targetMarkIndex = discoveredMarkIndex or GetRaidTargetIndex("target")
     local targetBuff = discoveredTargetBuff or UnitBuff("target", 1)
-    local isDiscovered = isAbilityDiscoverd(targetBuff, targetMarkIndex)
+    local isDiscovered = isAbilityDiscoverd(targetBuff)
 
     if (targetMarkIndex and G_ABILITIES[targetBuff] and G_counter <= 4 and not isDiscovered) then
         if not Anoobie:IsVisible() then
