@@ -29,4 +29,5 @@ Recommended for mages and raid leads.
 
 Hunter Feign Death then re-entering combat while Anubisath Sentinels are still alive with Detect Magic debuff may result in redundant raid announcement of their ability.
 
-Mage with detect magic debuff on themselves when targeting a dead Anubisath Sentinel target may result in redundant raid announcement of their ability.
+Mage with detect magic debuff on themselves from a previous Anubisath group, when entering combat with second groupt, might result in false Arcane/Fire Reflect raid announcement. 
+It is recommened to wait until reflected detect magic debuff fades away from mages before engaging with a second Anubisath group.
