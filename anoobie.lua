@@ -319,7 +319,6 @@ function Anoobie_OnLoad()
     Anoobie:RegisterEvent("CHAT_MSG_RAID_WARNING")
     Anoobie:RegisterEvent("CHAT_MSG_RAID")
     Anoobie:RegisterEvent("CHAT_MSG_RAID_LEADER")
-    --TO DO reset addon
     Anoobie:RegisterEvent("PLAYER_REGEN_DISABLED")
     print('---- ANOOBIE LOADED ----')
 end
