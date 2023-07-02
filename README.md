@@ -1,6 +1,12 @@
 # Anoobie
 Anubisath Sentinel magic detect helper
 
+### Installation
+
+Download the addon, remove "-main" sufix form the downloaded directory name and place it under Interface/AddOns/
+
+### About
+
 When detect magic is used on a marked Anubisath Sentinel in AQ40, their ability is announced and displayed. 
 
 Once all abilities are discovered, they are sorted based on the following kill priority (first on list = first to kill):
