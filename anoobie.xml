@@ -84,7 +84,7 @@
         </Anchors>
         <Layers>
           <Layer>
-            <FontString name="AnoobieLabel1" font="Fonts\FRIZQT__.TTF" text="Unkown Ability"
+            <FontString name="AnoobieLabel1" font="Fonts\FRIZQT__.TTF" text="Unknown Ability"
               justifyH="LEFT">
               <Anchors>
                 <Anchor point="TOPLEFT" />
@@ -282,7 +282,7 @@
         </Anchors>
         <Layers>
           <Layer>
-            <FontString name="AnoobieLabel2" font="Fonts\FRIZQT__.TTF" text="Unkown Ability"
+            <FontString name="AnoobieLabel2" font="Fonts\FRIZQT__.TTF" text="Unknown Ability"
               justifyH="LEFT">
               <Anchors>
                 <Anchor point="TOPLEFT" />
@@ -318,7 +318,7 @@
         </Anchors>
         <Layers>
           <Layer>
-            <FontString name="AnoobieLabel3" font="Fonts\FRIZQT__.TTF" text="Unkown Ability"
+            <FontString name="AnoobieLabel3" font="Fonts\FRIZQT__.TTF" text="Unknown Ability"
               justifyH="LEFT">
               <Anchors>
                 <Anchor point="TOPLEFT" />
@@ -354,7 +354,7 @@
         </Anchors>
         <Layers>
           <Layer>
-            <FontString name="AnoobieLabel4" font="Fonts\FRIZQT__.TTF" text="Unkown Ability"
+            <FontString name="AnoobieLabel4" font="Fonts\FRIZQT__.TTF" text="Unknown Ability"
               justifyH="LEFT">
               <Anchors>
                 <Anchor point="TOPLEFT" />

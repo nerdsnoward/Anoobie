@@ -332,7 +332,7 @@ function Anoobie_Reset()
         frame:SetTexCoord(0, 1, 0, 1)
     end
     for _, frame in pairs(G_childFrames.texts) do
-        frame:SetText("Unkown Ability")
+        frame:SetText("Unknown Ability")
     end
     Anoobie_ChangeAppearance(G_VARIATIONS.DEFAULT)
     G_announcedMessages = {}
