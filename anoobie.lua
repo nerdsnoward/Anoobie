@@ -189,6 +189,10 @@ function processRaidWarning(str)
 end
 
 function Anoobie_OnEvent()
+    if event == "PLAYER_REGEN_DISABLED" then
+        Anoobie_Reset()
+    end
+
     if event == "CHAT_MSG_RAID_WARNING" or event == "CHAT_MSG_RAID" or event == "CHAT_MSG_RAID_LEADER" then
         local mark, ability = processRaidWarning(arg1)
 
@@ -231,10 +235,6 @@ function Anoobie_Draw(discoveredTargetBuff, discoveredMarkIndex)
     local targetMarkIndex = discoveredMarkIndex or GetRaidTargetIndex("target")
     local targetBuff = discoveredTargetBuff or UnitBuff("target", 1)
     local isDiscovered = isAbilityDiscoverd(targetBuff, targetMarkIndex)
-
-    if event == "PLAYER_REGEN_DISABLED" or event == "PLAYER_REGEN_DISABLED" then
-        -- TO DO reset addon
-    end
 
     if (targetMarkIndex and G_ABILITIES[targetBuff] and G_counter <= 4 and not isDiscovered) then
         if not Anoobie:IsVisible() then
@@ -320,8 +320,7 @@ function Anoobie_OnLoad()
     Anoobie:RegisterEvent("CHAT_MSG_RAID")
     Anoobie:RegisterEvent("CHAT_MSG_RAID_LEADER")
     --TO DO reset addon
-    --Anoobie:RegisterEvent("PLAYER_REGEN_DISABLED")
-    --Anoobie:RegisterEvent("PLAYER_REGEN_ENABLED")
+    Anoobie:RegisterEvent("PLAYER_REGEN_DISABLED")
     print('---- ANOOBIE LOADED ----')
 end
 
