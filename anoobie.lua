@@ -136,18 +136,8 @@ G_ICONS = {
     }
 }
 G_counter = 1
-G_registeredTargets = {}
 G_announcedMessages = {}
 G_discoveredAbilities = {}
-G_arcaneReflected = false
-
--- Removes white spaces and & char from string.
--- Example: turnsShadow & Frost Reflect to ShadowFrostReflect
-function removeWhitespaceAndAmpersand(str)
-    str = string.gsub(str, "%s", "")
-    str = string.gsub(str, "&", "")
-    return str
-end
 
 -- Returns true if detect magic debuff is present on target
 function checkForDetectMagicDebuff(target)
@@ -211,9 +201,8 @@ function Anoobie_OnEvent()
     end
 
     if (event == "UNIT_AURA") then
-        if checkForDetectMagicDebuff("player") and not G_arcaneReflected then
+        if checkForDetectMagicDebuff("player") and UnitName("target") == "Anubisath Sentinel" then
             Anoobie_Draw(G_DETECT_MAGIC_TEXTURE)
-            G_arcaneReflected = true
             return
         end
 
@@ -228,31 +217,38 @@ function Anoobie_OnEvent()
     end
 end
 
+function isAbilityDiscoverd(buff, icon)
+    isDiscovered = false
+    for _, ability in pairs(G_discoveredAbilities) do
+        if ability.buffTexture == buff and ability.icon == icon then
+            isDiscovered = true
+        end
+    end
+    return isDiscovered
+end
+
 function Anoobie_Draw(discoveredTargetBuff, discoveredMarkIndex)
     local targetMarkIndex = discoveredMarkIndex or GetRaidTargetIndex("target")
     local targetBuff = discoveredTargetBuff or UnitBuff("target", 1)
+    local isDiscovered = isAbilityDiscoverd(targetBuff, targetMarkIndex)
 
     if event == "PLAYER_REGEN_DISABLED" or event == "PLAYER_REGEN_DISABLED" then
-     -- TO DO reset addon
+        -- TO DO reset addon
     end
-    
-    if (targetMarkIndex and G_ABILITIES[targetBuff] and G_counter <= 4) then
-        local targetId = removeWhitespaceAndAmpersand(G_ABILITIES[targetBuff].name) .. G_ICONS[targetMarkIndex].name
-        if (not G_registeredTargets[targetId]) then
-            if not Anoobie:IsVisible() then
-                Anoobie:Show()
-            end
-            Anoobie_SetTextures(targetBuff, targetMarkIndex, G_counter)
-            Anoobie_SendRaidWarning(G_ICONS[targetMarkIndex].name .. ": " .. G_ABILITIES[targetBuff].name)
-            table.insert(G_discoveredAbilities, {
-                name = G_ABILITIES[targetBuff].name,
-                order = G_ABILITIES[targetBuff].order,
-                icon = targetMarkIndex,
-                buffTexture = targetBuff
-            })
-            G_counter = G_counter + 1
-            G_registeredTargets[targetId] = true
+
+    if (targetMarkIndex and G_ABILITIES[targetBuff] and G_counter <= 4 and not isDiscovered) then
+        if not Anoobie:IsVisible() then
+            Anoobie:Show()
         end
+        Anoobie_SetTextures(targetBuff, targetMarkIndex, G_counter)
+        Anoobie_SendRaidWarning(G_ICONS[targetMarkIndex].name .. ": " .. G_ABILITIES[targetBuff].name)
+        table.insert(G_discoveredAbilities, {
+            name = G_ABILITIES[targetBuff].name,
+            order = G_ABILITIES[targetBuff].order,
+            icon = targetMarkIndex,
+            buffTexture = targetBuff
+        })
+        G_counter = G_counter + 1
     end
 
     if (G_counter == 5) then
@@ -318,12 +314,14 @@ function Anoobie_SendRaidWarning(message)
 end
 
 function Anoobie_OnLoad()
+    Anoobie:Hide()
     Anoobie:RegisterEvent("UNIT_AURA")
     Anoobie:RegisterEvent("CHAT_MSG_RAID_WARNING")
     Anoobie:RegisterEvent("CHAT_MSG_RAID")
     Anoobie:RegisterEvent("CHAT_MSG_RAID_LEADER")
-    Anoobie:RegisterEvent("PLAYER_REGEN_DISABLED")
-    Anoobie:RegisterEvent("PLAYER_REGEN_ENABLED")
+    --TO DO reset addon
+    --Anoobie:RegisterEvent("PLAYER_REGEN_DISABLED")
+    --Anoobie:RegisterEvent("PLAYER_REGEN_ENABLED")
     print('---- ANOOBIE LOADED ----')
 end
 
@@ -339,9 +337,7 @@ function Anoobie_Reset()
         frame:SetText("Unkown Ability")
     end
     Anoobie_ChangeAppearance(G_VARIATIONS.DEFAULT)
-    G_registeredTargets = {}
     G_announcedMessages = {}
     G_discoveredAbilities = {}
     G_counter = 1
-    G_arcaneReflected = false
 end
