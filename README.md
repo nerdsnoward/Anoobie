@@ -3,7 +3,7 @@ Anubisath Sentinel magic detect helper
 
 ### Installation
 
-Download the addon, remove "-main" sufix form the downloaded directory name and place it under Interface/AddOns/
+Download the addon, remove "-master" sufix form the downloaded directory name and place it under Interface/AddOns/
 
 ### About
 
