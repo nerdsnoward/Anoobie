@@ -205,17 +205,16 @@ function Anoobie_OnEvent()
     end
 
     if (event == "UNIT_AURA") then
-        if checkForDetectMagicDebuff("player") and UnitName("target") == "Anubisath Sentinel" then
-            Anoobie_Draw(G_DETECT_MAGIC_TEXTURE)
-            return
-        end
-
         local isAnoobieTarget = UnitExists("target") and UnitName("target") == "Anubisath Sentinel"
 
-        if isAnoobieTarget then
-            local isDetectMagicApplied = checkForDetectMagicDebuff("target")
-            if (isDetectMagicApplied) then
+        if isAnoobieTarget and UnitHealth("target") > 0 then
+            if checkForDetectMagicDebuff("target") then
                 Anoobie_Draw()
+                return
+            end
+            
+            if checkForDetectMagicDebuff("player") then
+                Anoobie_Draw(G_DETECT_MAGIC_TEXTURE)
             end
         end
     end
